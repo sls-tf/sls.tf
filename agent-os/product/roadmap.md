@@ -4,7 +4,7 @@
 
 2. [x] Lambda Function Translation - Parse Serverless Framework function definitions from configuration and generate aws_lambda_function resources with runtime, handler, memory, timeout, and environment variables, including automatic IAM role creation with basic execution permissions `M` ✅ COMPLETED
 
-3. [ ] IAM Role & Policy Management - Implement translation of Serverless Framework iamRoleStatements to aws_iam_role_policy attachments, supporting action wildcards, resource ARN references, and automatic role association with Lambda functions `M`
+3. [x] IAM Role & Policy Management - Implement translation of Serverless Framework iamRoleStatements to aws_iam_role_policy attachments, supporting action wildcards, resource ARN references, and automatic role association with Lambda functions `M` ✅ COMPLETED
 
 4. [ ] API Gateway REST API Integration - Generate aws_api_gateway_rest_api, aws_api_gateway_resource, aws_api_gateway_method, and aws_api_gateway_integration resources from Serverless http events, including CORS configuration and deployment stage creation `L`
 

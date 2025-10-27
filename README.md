@@ -241,8 +241,10 @@ terraform plan
 - ✅ **#1: Core Module Structure & YAML Parsing** - Parse and validate Serverless Framework configurations
 - ✅ **#2: Lambda Function Translation** - Generate Lambda functions, IAM roles, and code packages
 
+### Completed
+- ✅ **#3: IAM Role & Policy Management** - Custom IAM policies from iamRoleStatements
+
 ### In Progress
-- 🚧 **#3: IAM Role & Policy Management** - Custom IAM policies from iamRoleStatements
 - 🚧 **#4: API Gateway REST API Integration** - HTTP event triggers and API Gateway resources
 
 ### Planned

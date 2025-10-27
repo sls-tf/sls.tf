@@ -36,7 +36,10 @@ locals {
 
     # IAM statement validations (Roadmap #3)
     local.parsed_config != null ? local.provider_iam_validation_errors : [],
-    local.parsed_config != null ? local.iam_validation_errors : []
+    local.parsed_config != null ? local.iam_validation_errors : [],
+
+    # HTTP event validations (Roadmap #4)
+    local.parsed_config != null ? local.http_event_validation_errors : []
   )
 
   # Runtime validation errors (strict mode)
@@ -212,4 +215,55 @@ locals {
     func_name => statements
     if length(statements) > 0
   }
+
+  # HTTP Event Parsing (Roadmap #4)
+  # Extract all HTTP events from all functions
+  http_events = flatten([
+    for func_name, func in local.functions_with_defaults : [
+      for event in try(func.events, []) : {
+        function_name = func_name
+        # Don't reference Lambda ARN here to avoid circular dependency
+        # ARN will be referenced in API Gateway resources
+        handler       = func.handler
+        runtime       = func.runtime
+
+        # Parse short-form: "http: GET /users/{id}"
+        # Parse long-form: "http: { path: /users, method: GET, cors: true }"
+        http_method = (can(event.http) && can(regex("^[A-Z]+ ", tostring(event.http)))) ? upper(split(" ", tostring(event.http))[0]) : upper(try(event.http.method, ""))
+
+        http_path = (can(event.http) && can(regex("^[A-Z]+ ", tostring(event.http)))) ? trimprefix(trimsuffix(trimspace(substr(tostring(event.http), length(split(" ", tostring(event.http))[0]) + 1, -1)), "/"), "") : trimsuffix(try(event.http.path, ""), "/")
+
+        cors_enabled = can(event.http.cors) ? (can(tobool(event.http.cors)) ? tobool(event.http.cors) : true) : false
+
+        cors_config = (can(event.http.cors) && !can(tobool(event.http.cors))) ? event.http.cors : null
+      }
+      if can(event.http)
+    ]
+  ])
+
+  # Deduplicate functions with HTTP events for permissions
+  functions_with_http_events = toset([
+    for event in local.http_events : event.function_name
+  ])
+
+  # HTTP event validation errors
+  http_event_validation_errors = flatten([
+    for event in local.http_events : concat(
+      # Validate HTTP method
+      !contains(["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"], event.http_method) ?
+      ["Function '${event.function_name}' has invalid HTTP method '${event.http_method}'. Must be one of: GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS."] : [],
+
+      # Validate path starts with /
+      !can(regex("^/", event.http_path)) ?
+      ["Function '${event.function_name}' has invalid HTTP path '${event.http_path}'. Path must start with '/'."] : [],
+
+      # Validate no empty segments
+      can(regex("//", event.http_path)) ?
+      ["Function '${event.function_name}' has invalid HTTP path '${event.http_path}'. Path cannot contain empty segments (consecutive slashes)."] : [],
+
+      # Validate path parameters
+      can(regex("\\{[^a-zA-Z0-9_]", event.http_path)) || can(regex("\\{\\}", event.http_path)) ?
+      ["Function '${event.function_name}' has invalid path parameter syntax in '${event.http_path}'. Parameters must be {paramName} with alphanumeric/underscore characters only."] : []
+    )
+  ])
 }
