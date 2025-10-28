@@ -6,3 +6,6 @@
 
 # Lambda ZIP files
 .terraform/lambda-*.zip
+
+# LocalStack
+.localstack/data/
