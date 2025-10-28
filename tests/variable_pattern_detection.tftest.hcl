@@ -58,7 +58,7 @@ run "test_variable_pattern_regex" {
   # Should have valid regex pattern
   assert {
     condition     = local.variable_pattern_regex == "\\$\\{([^}]+)\\}"
-    error_message = "Variable pattern regex should match ${...} syntax"
+    error_message = "Variable pattern regex should match $${...} syntax"
   }
 }
 

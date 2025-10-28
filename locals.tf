@@ -13,6 +13,14 @@ locals {
   # Future: TypeScript parsing support (roadmap item #6)
   # parsed_config = var.config_format == "typescript" ? ... : local.yaml_config
 
+  # Variable Resolution Integration (Feature #11)
+  # The resolved_config from variable_resolution.tf contains the parsed config
+  # with all ${self:} and ${env:} variables resolved. For backward compatibility
+  # and to enable variable resolution transparently, we use resolved_config
+  # throughout the module by referencing it via parsed_config_resolved.
+  # Note: parsed_config continues to exist for the resolution engine itself.
+  parsed_config_resolved = try(local.resolved_config, local.parsed_config)
+
   # Comprehensive validation error collection
   validation_errors = local.parsed_config == null ? [] : concat(
     # Required field validations
@@ -48,7 +56,10 @@ locals {
     local.parsed_config != null ? local.event_source_validation_errors : [],
 
     # Custom resource validations (Roadmap #9)
-    local.parsed_config != null ? local.custom_resource_validation_errors : []
+    local.parsed_config != null ? local.custom_resource_validation_errors : [],
+
+    # Variable resolution errors (Roadmap #11)
+    local.parsed_config != null ? local.variable_resolution_errors : []
   )
 
   # Runtime validation errors (strict mode)

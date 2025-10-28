@@ -45,7 +45,7 @@ locals {
 
   # Helper function to extract all variable references from a string value
   # Returns list of variable expressions like ["self:provider.stage", "env:NODE_ENV"]
-  extract_variable_refs = {
+  extract_variable_refs = local.parsed_config != null ? {
     for k, v in flatten([
       for key, value in local.parsed_config : [
         {
@@ -59,7 +59,7 @@ locals {
       ]
       if can(tostring(value))
     ]) : v.path => v.matches if length(v.matches) > 0
-  }
+  } : {}
 
   # Parse variable expressions into structured format
   # Example: "self:provider.stage" => {type: "self", path: "provider.stage"}
@@ -83,7 +83,7 @@ locals {
 
   # Helper function to traverse object paths like "provider.stage"
   # Returns the value at that path or null if not found
-  traverse_path = {
+  traverse_path = local.parsed_config != null ? {
     # Pre-compute common self-reference paths
     "service"             = try(local.parsed_config.service, null)
     "provider.name"       = try(local.parsed_config.provider.name, null)
@@ -92,11 +92,11 @@ locals {
     "provider.runtime"    = try(local.parsed_config.provider.runtime, null)
     "custom.defaultStage" = try(local.parsed_config.custom.defaultStage, null)
     "custom.bucketName"   = try(local.parsed_config.custom.bucketName, null)
-  }
+  } : {}
 
   # First pass: resolve simple ${self:} references
   # This handles direct references without nested variables
-  config_with_self_resolved = {
+  config_with_self_resolved = local.parsed_config != null ? {
     for key, value in local.parsed_config : key => (
       can(tostring(value)) && can(regex("\\$\\{self:", tostring(value))) ? (
         # Replace ${self:} variables with actual values
@@ -119,7 +119,7 @@ locals {
         )
       ) : value
     )
-  }
+  } : {}
 
   # ===========================================================================
   # ${env:} Resolution Algorithm
@@ -141,24 +141,53 @@ locals {
   }
 
   # Second pass: resolve ${env:} variables
-  config_with_env_resolved = {
+  # Manually replace each parsed env variable
+  config_with_env_pass1 = {
     for key, value in local.config_with_self_resolved : key => (
-      can(tostring(value)) && can(regex("\\$\\{env:", tostring(value))) ? (
-        # Get parsed env variables for this value
-        length(try(local.env_variables_parsed[key], [])) > 0 ? (
-          # Replace each ${env:} with resolved value or default
-          reduce(local.env_variables_parsed[key], tostring(value), (result, env_var) => replace(
-            result,
-            env_var.full_match,
-            try(
-              var.environment_vars[env_var.var_name],
-              try(env_var.default, env_var.full_match)
-            )
-          ))
-        ) : value
+      can(tostring(value)) && length(try(local.env_variables_parsed[key], [])) > 0 ? (
+        replace(
+          tostring(value),
+          try(local.env_variables_parsed[key][0].full_match, ""),
+          try(
+            var.environment_vars[try(local.env_variables_parsed[key][0].var_name, "")],
+            try(local.env_variables_parsed[key][0].default, try(local.env_variables_parsed[key][0].full_match, ""))
+          )
+        )
       ) : value
     )
   }
+
+  config_with_env_pass2 = {
+    for key, value in local.config_with_env_pass1 : key => (
+      can(tostring(value)) && length(try(local.env_variables_parsed[key], [])) > 1 ? (
+        replace(
+          tostring(value),
+          try(local.env_variables_parsed[key][1].full_match, ""),
+          try(
+            var.environment_vars[try(local.env_variables_parsed[key][1].var_name, "")],
+            try(local.env_variables_parsed[key][1].default, try(local.env_variables_parsed[key][1].full_match, ""))
+          )
+        )
+      ) : value
+    )
+  }
+
+  config_with_env_pass3 = {
+    for key, value in local.config_with_env_pass2 : key => (
+      can(tostring(value)) && length(try(local.env_variables_parsed[key], [])) > 2 ? (
+        replace(
+          tostring(value),
+          try(local.env_variables_parsed[key][2].full_match, ""),
+          try(
+            var.environment_vars[try(local.env_variables_parsed[key][2].var_name, "")],
+            try(local.env_variables_parsed[key][2].default, try(local.env_variables_parsed[key][2].full_match, ""))
+          )
+        )
+      ) : value
+    )
+  }
+
+  config_with_env_resolved = local.config_with_env_pass3
 
   # Final resolved config - combines ${self:} and ${env:} resolution
   resolved_config = local.config_with_env_resolved
