@@ -1,0 +1,21 @@
+{
+  "name": "sls-tf",
+  "version": "0.1.0",
+  "description": "Serverless Framework to Terraform translation module",
+  "private": true,
+  "scripts": {
+    "generate:validation": "node tools/schema-generator/bin/schema-generator.js --schema-version=all",
+    "generate:validation:v2": "node tools/schema-generator/bin/schema-generator.js --schema-version=2",
+    "generate:validation:v3": "node tools/schema-generator/bin/schema-generator.js --schema-version=3",
+    "generate:validation:v4": "node tools/schema-generator/bin/schema-generator.js --schema-version=4",
+    "test:schema-generator": "cd tools/schema-generator && npm test"
+  },
+  "keywords": [
+    "terraform",
+    "serverless",
+    "aws",
+    "infrastructure"
+  ],
+  "author": "",
+  "license": "MIT"
+}
