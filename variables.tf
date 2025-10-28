@@ -74,3 +74,30 @@ variable "localstack_endpoint" {
     error_message = "The localstack_endpoint must be a valid HTTP or HTTPS URL."
   }
 }
+
+# ============================================================================
+# Variable Resolution Configuration
+# ============================================================================
+
+variable "environment_vars" {
+  description = "Map of environment variables for ${env:} variable resolution. Keys are variable names, values are the resolved values."
+  type        = map(string)
+  default     = {}
+}
+
+variable "strict_variable_resolution" {
+  description = "When true, fail on any unresolved variables. When false, allow unresolved variables to remain as-is."
+  type        = bool
+  default     = true
+}
+
+variable "max_variable_depth" {
+  description = "Maximum depth for recursive variable resolution. Prevents infinite loops in circular references."
+  type        = number
+  default     = 10
+
+  validation {
+    condition     = var.max_variable_depth > 0 && var.max_variable_depth <= 50
+    error_message = "max_variable_depth must be between 1 and 50."
+  }
+}
