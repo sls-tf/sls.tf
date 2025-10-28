@@ -35,3 +35,42 @@ variable "lambda_code_path" {
     error_message = "lambda_code_path must not be an empty string."
   }
 }
+
+variable "enable_custom_domain" {
+  description = "Enable custom domain configuration for API Gateway (requires provider.customDomain block in serverless.yml)"
+  type        = bool
+  default     = false
+}
+
+variable "create_hosted_zone" {
+  description = "Create Route 53 hosted zone if hostedZoneId not provided in customDomain configuration"
+  type        = bool
+  default     = false
+}
+
+variable "acm_certificate_arn" {
+  description = "ACM certificate ARN for custom domain (fallback if not specified in customDomain.certificateArn)"
+  type        = string
+  default     = null
+}
+
+# ============================================================================
+# LocalStack Testing Configuration
+# ============================================================================
+
+variable "use_localstack" {
+  description = "Enable LocalStack mode for testing. When true, all AWS provider endpoints will point to LocalStack."
+  type        = bool
+  default     = false
+}
+
+variable "localstack_endpoint" {
+  description = "LocalStack endpoint URL. Only used when use_localstack is true."
+  type        = string
+  default     = "http://localhost:4566"
+
+  validation {
+    condition     = can(regex("^https?://", var.localstack_endpoint))
+    error_message = "The localstack_endpoint must be a valid HTTP or HTTPS URL."
+  }
+}
