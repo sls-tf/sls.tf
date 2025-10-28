@@ -18,7 +18,7 @@ run "provider_statements_only" {
   assert {
     condition = alltrue([
       for func_name, stmts in local.merged_iam_statements :
-      length(stmts) == 2  # Both functions get the 2 provider statements
+      length(stmts) == 2 # Both functions get the 2 provider statements
     ])
     error_message = "All functions should have provider-level statements"
   }
