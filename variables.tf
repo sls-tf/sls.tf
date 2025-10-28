@@ -80,7 +80,7 @@ variable "localstack_endpoint" {
 # ============================================================================
 
 variable "environment_vars" {
-  description = "Map of environment variables for ${env:} variable resolution. Keys are variable names, values are the resolved values."
+  description = "Map of environment variables for $${env:} variable resolution. Keys are variable names, values are the resolved values."
   type        = map(string)
   default     = {}
 }
