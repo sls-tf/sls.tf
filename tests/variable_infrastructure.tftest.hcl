@@ -5,7 +5,7 @@ run "test_default_variable_resolution_settings" {
   command = plan
 
   variables {
-    config_path = "${path.module}/fixtures/simple-function.yml"
+    config_path = "tests/fixtures/simple-function.yml"
   }
 
   # Default settings should work
@@ -29,7 +29,7 @@ run "test_environment_vars_input" {
   command = plan
 
   variables {
-    config_path = "${path.module}/fixtures/simple-function.yml"
+    config_path = "tests/fixtures/simple-function.yml"
     environment_vars = {
       "NODE_ENV"    = "production"
       "API_KEY"     = "test-key-123"
@@ -53,7 +53,7 @@ run "test_strict_variable_resolution_flag" {
   command = plan
 
   variables {
-    config_path               = "${path.module}/fixtures/simple-function.yml"
+    config_path               = "tests/fixtures/simple-function.yml"
     strict_variable_resolution = false
   }
 
@@ -68,7 +68,7 @@ run "test_max_variable_depth_valid_range" {
   command = plan
 
   variables {
-    config_path        = "${path.module}/fixtures/simple-function.yml"
+    config_path        = "tests/fixtures/simple-function.yml"
     max_variable_depth = 5
   }
 
@@ -83,7 +83,7 @@ run "test_max_variable_depth_validation_too_low" {
   command = plan
 
   variables {
-    config_path        = "${path.module}/fixtures/simple-function.yml"
+    config_path        = "tests/fixtures/simple-function.yml"
     max_variable_depth = 0
   }
 
@@ -97,7 +97,7 @@ run "test_max_variable_depth_validation_too_high" {
   command = plan
 
   variables {
-    config_path        = "${path.module}/fixtures/simple-function.yml"
+    config_path        = "tests/fixtures/simple-function.yml"
     max_variable_depth = 51
   }
 

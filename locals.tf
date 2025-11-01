@@ -158,13 +158,13 @@ locals {
   ])
 
   # Provider-level defaults application
-  provider_with_defaults = local.parsed_config == null ? null : merge(
-    try(local.parsed_config.provider, {}),
+  provider_with_defaults = local.parsed_config_resolved == null ? null : merge(
+    try(local.parsed_config_resolved.provider, {}),
     {
-      stage      = coalesce(try(local.parsed_config.provider.stage, null), "dev")
-      region     = coalesce(try(local.parsed_config.provider.region, null), var.aws_region, "us-east-1")
-      memorySize = coalesce(try(local.parsed_config.provider.memorySize, null), 1024)
-      timeout    = coalesce(try(local.parsed_config.provider.timeout, null), 6)
+      stage      = coalesce(try(local.parsed_config_resolved.provider.stage, null), "dev")
+      region     = coalesce(try(local.parsed_config_resolved.provider.region, null), var.aws_region, "us-east-1")
+      memorySize = coalesce(try(local.parsed_config_resolved.provider.memorySize, null), 1024)
+      timeout    = coalesce(try(local.parsed_config_resolved.provider.timeout, null), 6)
       # Runtime has NO default - must be explicitly specified (strict validation)
     }
   )
@@ -732,12 +732,19 @@ locals {
     if try(resource.Type, "") == "AWS::SQS::Queue"
   }
 
+  cloudfront_distributions = {
+    for logical_id, resource in local.custom_resources_raw :
+    logical_id => resource
+    if try(resource.Type, "") == "AWS::CloudFront::Distribution"
+  }
+
   # Supported resource types
   supported_resource_types = toset([
     "AWS::S3::Bucket",
     "AWS::DynamoDB::Table",
     "AWS::SNS::Topic",
-    "AWS::SQS::Queue"
+    "AWS::SQS::Queue",
+    "AWS::CloudFront::Distribution"
   ])
 
   # Identify unsupported resource types for validation
@@ -750,6 +757,6 @@ locals {
   # Validation errors for unsupported resources
   custom_resource_validation_errors = [
     for logical_id, type in local.unsupported_resources :
-    "Unsupported CloudFormation resource type '${type}' for resource '${logical_id}'. Supported types: S3::Bucket, DynamoDB::Table, SNS::Topic, SQS::Queue."
+    "Unsupported CloudFormation resource type '${type}' for resource '${logical_id}'. Supported types: S3::Bucket, DynamoDB::Table, SNS::Topic, SQS::Queue, CloudFront::Distribution."
   ]
 }

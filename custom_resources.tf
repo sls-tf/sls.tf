@@ -234,3 +234,184 @@ resource "aws_sqs_queue" "custom" {
     }, {})
   )
 }
+
+# ============================================================================
+# CloudFront Distributions (Roadmap #12)
+# ============================================================================
+
+# CloudFront Distribution resource
+# Maps from CloudFormation AWS::CloudFront::Distribution to aws_cloudfront_distribution
+resource "aws_cloudfront_distribution" "custom" {
+  for_each = local.cloudfront_distributions
+
+  enabled             = try(each.value.Properties.DistributionConfig.Enabled, true)
+  is_ipv6_enabled     = try(each.value.Properties.DistributionConfig.IPV6Enabled, true)
+  comment             = try(each.value.Properties.DistributionConfig.Comment, "Managed by sls.tf - ${each.key}")
+  default_root_object = try(each.value.Properties.DistributionConfig.DefaultRootObject, null)
+  price_class         = try(each.value.Properties.DistributionConfig.PriceClass, "PriceClass_All")
+  aliases             = try(each.value.Properties.DistributionConfig.Aliases, [])
+  web_acl_id          = try(each.value.Properties.DistributionConfig.WebACLId, null)
+
+  # Origins configuration
+  dynamic "origin" {
+    for_each = try(each.value.Properties.DistributionConfig.Origins, [])
+    content {
+      domain_name = origin.value.DomainName
+      origin_id   = origin.value.Id
+      origin_path = try(origin.value.OriginPath, "")
+
+      # S3 origin configuration
+      dynamic "s3_origin_config" {
+        for_each = try(origin.value.S3OriginConfig, null) != null ? [origin.value.S3OriginConfig] : []
+        content {
+          origin_access_identity = try(s3_origin_config.value.OriginAccessIdentity, "")
+        }
+      }
+
+      # Custom origin configuration
+      dynamic "custom_origin_config" {
+        for_each = try(origin.value.CustomOriginConfig, null) != null ? [origin.value.CustomOriginConfig] : []
+        content {
+          http_port                = try(custom_origin_config.value.HTTPPort, 80)
+          https_port               = try(custom_origin_config.value.HTTPSPort, 443)
+          origin_protocol_policy   = try(custom_origin_config.value.OriginProtocolPolicy, "https-only")
+          origin_ssl_protocols     = try(custom_origin_config.value.OriginSSLProtocols, ["TLSv1.2"])
+          origin_keepalive_timeout = try(custom_origin_config.value.OriginKeepaliveTimeout, 5)
+          origin_read_timeout      = try(custom_origin_config.value.OriginReadTimeout, 30)
+        }
+      }
+
+      # Custom headers
+      dynamic "custom_header" {
+        for_each = try(origin.value.CustomHeaders, [])
+        content {
+          name  = custom_header.value.HeaderName
+          value = custom_header.value.HeaderValue
+        }
+      }
+    }
+  }
+
+  # Default cache behavior
+  default_cache_behavior {
+    allowed_methods  = try(each.value.Properties.DistributionConfig.DefaultCacheBehavior.AllowedMethods, ["GET", "HEAD"])
+    cached_methods   = try(each.value.Properties.DistributionConfig.DefaultCacheBehavior.CachedMethods, ["GET", "HEAD"])
+    target_origin_id = try(each.value.Properties.DistributionConfig.DefaultCacheBehavior.TargetOriginId, "")
+
+    forwarded_values {
+      query_string = try(each.value.Properties.DistributionConfig.DefaultCacheBehavior.ForwardedValues.QueryString, false)
+      headers      = try(each.value.Properties.DistributionConfig.DefaultCacheBehavior.ForwardedValues.Headers, [])
+
+      cookies {
+        forward           = try(each.value.Properties.DistributionConfig.DefaultCacheBehavior.ForwardedValues.Cookies.Forward, "none")
+        whitelisted_names = try(each.value.Properties.DistributionConfig.DefaultCacheBehavior.ForwardedValues.Cookies.WhitelistedNames, [])
+      }
+    }
+
+    viewer_protocol_policy = try(each.value.Properties.DistributionConfig.DefaultCacheBehavior.ViewerProtocolPolicy, "redirect-to-https")
+    min_ttl                = try(each.value.Properties.DistributionConfig.DefaultCacheBehavior.MinTTL, 0)
+    default_ttl            = try(each.value.Properties.DistributionConfig.DefaultCacheBehavior.DefaultTTL, 86400)
+    max_ttl                = try(each.value.Properties.DistributionConfig.DefaultCacheBehavior.MaxTTL, 31536000)
+    compress               = try(each.value.Properties.DistributionConfig.DefaultCacheBehavior.Compress, false)
+
+    # Lambda function associations
+    dynamic "lambda_function_association" {
+      for_each = try(each.value.Properties.DistributionConfig.DefaultCacheBehavior.LambdaFunctionAssociations, [])
+      content {
+        event_type   = lambda_function_association.value.EventType
+        lambda_arn   = lambda_function_association.value.LambdaFunctionARN
+        include_body = try(lambda_function_association.value.IncludeBody, false)
+      }
+    }
+  }
+
+  # Ordered cache behaviors
+  dynamic "ordered_cache_behavior" {
+    for_each = try(each.value.Properties.DistributionConfig.CacheBehaviors, [])
+    content {
+      path_pattern     = ordered_cache_behavior.value.PathPattern
+      allowed_methods  = try(ordered_cache_behavior.value.AllowedMethods, ["GET", "HEAD"])
+      cached_methods   = try(ordered_cache_behavior.value.CachedMethods, ["GET", "HEAD"])
+      target_origin_id = ordered_cache_behavior.value.TargetOriginId
+
+      forwarded_values {
+        query_string = try(ordered_cache_behavior.value.ForwardedValues.QueryString, false)
+        headers      = try(ordered_cache_behavior.value.ForwardedValues.Headers, [])
+
+        cookies {
+          forward           = try(ordered_cache_behavior.value.ForwardedValues.Cookies.Forward, "none")
+          whitelisted_names = try(ordered_cache_behavior.value.ForwardedValues.Cookies.WhitelistedNames, [])
+        }
+      }
+
+      viewer_protocol_policy = try(ordered_cache_behavior.value.ViewerProtocolPolicy, "redirect-to-https")
+      min_ttl                = try(ordered_cache_behavior.value.MinTTL, 0)
+      default_ttl            = try(ordered_cache_behavior.value.DefaultTTL, 86400)
+      max_ttl                = try(ordered_cache_behavior.value.MaxTTL, 31536000)
+      compress               = try(ordered_cache_behavior.value.Compress, false)
+
+      # Lambda function associations
+      dynamic "lambda_function_association" {
+        for_each = try(ordered_cache_behavior.value.LambdaFunctionAssociations, [])
+        content {
+          event_type   = lambda_function_association.value.EventType
+          lambda_arn   = lambda_function_association.value.LambdaFunctionARN
+          include_body = try(lambda_function_association.value.IncludeBody, false)
+        }
+      }
+    }
+  }
+
+  # Custom error responses
+  dynamic "custom_error_response" {
+    for_each = try(each.value.Properties.DistributionConfig.CustomErrorResponses, [])
+    content {
+      error_code            = custom_error_response.value.ErrorCode
+      response_code         = try(custom_error_response.value.ResponseCode, null)
+      response_page_path    = try(custom_error_response.value.ResponsePagePath, null)
+      error_caching_min_ttl = try(custom_error_response.value.ErrorCachingMinTTL, 300)
+    }
+  }
+
+  # Viewer certificate configuration
+  viewer_certificate {
+    cloudfront_default_certificate = try(each.value.Properties.DistributionConfig.ViewerCertificate.CloudFrontDefaultCertificate, true)
+    acm_certificate_arn            = try(each.value.Properties.DistributionConfig.ViewerCertificate.AcmCertificateArn, null)
+    iam_certificate_id             = try(each.value.Properties.DistributionConfig.ViewerCertificate.IamCertificateId, null)
+    minimum_protocol_version       = try(each.value.Properties.DistributionConfig.ViewerCertificate.MinimumProtocolVersion, "TLSv1.2_2021")
+    ssl_support_method             = try(each.value.Properties.DistributionConfig.ViewerCertificate.SslSupportMethod, null)
+  }
+
+  # Restrictions (geo restriction)
+  restrictions {
+    geo_restriction {
+      restriction_type = try(each.value.Properties.DistributionConfig.Restrictions.GeoRestriction.RestrictionType, "none")
+      locations        = try(each.value.Properties.DistributionConfig.Restrictions.GeoRestriction.Locations, [])
+    }
+  }
+
+  # Logging configuration
+  dynamic "logging_config" {
+    for_each = try(each.value.Properties.DistributionConfig.Logging, null) != null ? [each.value.Properties.DistributionConfig.Logging] : []
+    content {
+      bucket          = logging_config.value.Bucket
+      prefix          = try(logging_config.value.Prefix, "")
+      include_cookies = try(logging_config.value.IncludeCookies, false)
+    }
+  }
+
+  # Tags
+  tags = merge(
+    {
+      Name        = each.key
+      ManagedBy   = "sls.tf"
+      LogicalId   = each.key
+      Environment = local.provider_with_defaults.stage
+    },
+    # Convert CloudFormation tag format to Terraform map
+    try({
+      for tag in each.value.Properties.Tags :
+      tag.Key => tag.Value
+    }, {})
+  )
+}

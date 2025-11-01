@@ -5,7 +5,7 @@ run "test_detect_self_variables" {
   command = plan
 
   variables {
-    config_path = "${path.module}/fixtures/variables-self-reference.yml"
+    config_path = "tests/fixtures/variables-self-reference.yml"
   }
 
   # Should detect ${self:} variables in the config
@@ -19,7 +19,7 @@ run "test_detect_env_variables" {
   command = plan
 
   variables {
-    config_path = "${path.module}/fixtures/variables-env.yml"
+    config_path = "tests/fixtures/variables-env.yml"
     environment_vars = {
       "STAGE"      = "production"
       "AWS_REGION" = "us-west-2"
@@ -38,7 +38,7 @@ run "test_no_variables_in_simple_config" {
   command = plan
 
   variables {
-    config_path = "${path.module}/fixtures/simple-function.yml"
+    config_path = "tests/fixtures/simple-function.yml"
   }
 
   # Should not detect variables in config without any
@@ -52,7 +52,7 @@ run "test_variable_pattern_regex" {
   command = plan
 
   variables {
-    config_path = "${path.module}/fixtures/simple-function.yml"
+    config_path = "tests/fixtures/simple-function.yml"
   }
 
   # Should have valid regex pattern
@@ -66,7 +66,7 @@ run "test_parsed_variables_structure" {
   command = plan
 
   variables {
-    config_path = "${path.module}/fixtures/variables-self-reference.yml"
+    config_path = "tests/fixtures/variables-self-reference.yml"
   }
 
   # Should parse variables into structured format

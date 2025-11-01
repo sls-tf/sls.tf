@@ -5,7 +5,7 @@ run "test_resolve_self_service" {
   command = plan
 
   variables {
-    config_path = "${path.module}/fixtures/variables-self-reference.yml"
+    config_path = "tests/fixtures/variables-self-reference.yml"
   }
 
   # Should resolve ${self:service} to actual service name
@@ -19,7 +19,7 @@ run "test_resolve_self_provider_stage" {
   command = plan
 
   variables {
-    config_path = "${path.module}/fixtures/variables-self-reference.yml"
+    config_path = "tests/fixtures/variables-self-reference.yml"
   }
 
   # ${self:provider.stage} should initially be ${self:custom.defaultStage}
@@ -34,7 +34,7 @@ run "test_config_with_self_resolved" {
   command = plan
 
   variables {
-    config_path = "${path.module}/fixtures/variables-self-reference.yml"
+    config_path = "tests/fixtures/variables-self-reference.yml"
   }
 
   # Should have config_with_self_resolved local
@@ -48,7 +48,7 @@ run "test_traverse_path_handles_missing" {
   command = plan
 
   variables {
-    config_path = "${path.module}/fixtures/simple-function.yml"
+    config_path = "tests/fixtures/valid-minimal.yml"
   }
 
   # Should handle missing paths gracefully (return null)
@@ -62,7 +62,7 @@ run "test_resolved_config_exists" {
   command = plan
 
   variables {
-    config_path = "${path.module}/fixtures/variables-self-reference.yml"
+    config_path = "tests/fixtures/variables-self-reference.yml"
   }
 
   # Should create resolved_config

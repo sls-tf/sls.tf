@@ -86,7 +86,7 @@ resource "null_resource" "lambda_size_validation" {
 resource "aws_iam_role" "lambda_execution" {
   for_each = local.functions_with_defaults
 
-  name = "${try(local.parsed_config.service, "unknown")}-${local.provider_with_defaults.stage}-${each.key}-role"
+  name = "${try(local.parsed_config_resolved.service, "unknown")}-${local.provider_with_defaults.stage}-${each.key}-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -100,7 +100,7 @@ resource "aws_iam_role" "lambda_execution" {
   })
 
   tags = {
-    Service  = try(local.parsed_config.service, "unknown")
+    Service  = try(local.parsed_config_resolved.service, "unknown")
     Stage    = local.provider_with_defaults.stage
     Function = each.key
   }
@@ -118,7 +118,7 @@ resource "aws_iam_role_policy_attachment" "lambda_logs" {
 resource "aws_iam_role_policy" "lambda_custom_policy" {
   for_each = local.functions_with_policies
 
-  name = "${try(local.parsed_config.service, "unknown")}-${local.provider_with_defaults.stage}-${each.key}-policy"
+  name = "${try(local.parsed_config_resolved.service, "unknown")}-${local.provider_with_defaults.stage}-${each.key}-policy"
   role = aws_iam_role.lambda_execution[each.key].name
 
   policy = jsonencode({
@@ -137,7 +137,7 @@ resource "aws_iam_role_policy" "lambda_custom_policy" {
 resource "aws_lambda_function" "functions" {
   for_each = local.functions_with_defaults
 
-  function_name = "${try(local.parsed_config.service, "unknown")}-${local.provider_with_defaults.stage}-${each.key}"
+  function_name = "${try(local.parsed_config_resolved.service, "unknown")}-${local.provider_with_defaults.stage}-${each.key}"
   role          = aws_iam_role.lambda_execution[each.key].arn
 
   filename         = data.archive_file.lambda_code[each.key].output_path
@@ -158,7 +158,7 @@ resource "aws_lambda_function" "functions" {
   }
 
   tags = {
-    Service  = try(local.parsed_config.service, "unknown")
+    Service  = try(local.parsed_config_resolved.service, "unknown")
     Stage    = local.provider_with_defaults.stage
     Function = each.key
   }
@@ -212,8 +212,8 @@ resource "null_resource" "config_validation" {
 resource "aws_api_gateway_rest_api" "this" {
   count = length(local.http_events) > 0 ? 1 : 0
 
-  name        = "${local.parsed_config.service}-${local.provider_with_defaults.stage}"
-  description = "API Gateway for ${local.parsed_config.service}"
+  name        = "${local.parsed_config_resolved.service}-${local.provider_with_defaults.stage}"
+  description = "API Gateway for ${local.parsed_config_resolved.service}"
 
   endpoint_configuration {
     types = ["EDGE"]

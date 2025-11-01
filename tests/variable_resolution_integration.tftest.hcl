@@ -5,7 +5,7 @@ run "test_self_variables_in_complete_config" {
   command = plan
 
   variables {
-    config_path = "${path.module}/fixtures/variables-self-reference.yml"
+    config_path = "tests/fixtures/variables-self-reference.yml"
   }
 
   # Should successfully parse and resolve ${self:} variables
@@ -36,7 +36,7 @@ run "test_env_variables_in_complete_config" {
   command = plan
 
   variables {
-    config_path = "${path.module}/fixtures/variables-env.yml"
+    config_path = "tests/fixtures/variables-env.yml"
     environment_vars = {
       "STAGE"      = "production"
       "AWS_REGION" = "us-west-2"
@@ -62,7 +62,7 @@ run "test_mixed_self_and_env_variables" {
   command = plan
 
   variables {
-    config_path = "${path.module}/fixtures/variables-self-reference.yml"
+    config_path = "tests/fixtures/variables-self-reference.yml"
     environment_vars = {
       "STAGE" = "staging"
     }
@@ -79,7 +79,7 @@ run "test_no_variables_backward_compatibility" {
   command = plan
 
   variables {
-    config_path = "${path.module}/fixtures/simple-function.yml"
+    config_path = "tests/fixtures/simple-function.yml"
   }
 
   # Should work normally for configs without variables
@@ -99,7 +99,7 @@ run "test_variable_resolution_with_validation" {
   command = plan
 
   variables {
-    config_path = "${path.module}/fixtures/variables-self-reference.yml"
+    config_path = "tests/fixtures/variables-self-reference.yml"
   }
 
   # Module validation should still work with resolved config
