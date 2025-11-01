@@ -696,8 +696,8 @@ locals {
   # Custom Resource Parsing (Roadmap #9)
   # ============================================================================
 
-  # Extract resources section from serverless config
-  custom_resources_raw = try(local.parsed_config.resources.Resources, {})
+  # Extract resources section from serverless config (with variable resolution)
+  custom_resources_raw = try(local.resolved_config.resources.Resources, {})
 
   # Helper function to convert PascalCase to snake_case
   # Example: MyBucket -> my_bucket, UsersTable -> users_table
