@@ -10,7 +10,7 @@
 
 5. [x] S3 Event Source Mapping - Provision S3 bucket notification configurations (aws_s3_bucket_notification) from Serverless s3 events with event type filtering, prefix/suffix patterns, and Lambda permission grants `S` ✅ COMPLETED
 
-6. [ ] TypeScript Configuration Parsing - Implement external data source with Node.js/ts-node executor to parse serverless.ts files, handle async exports, and convert TypeScript configuration to JSON for Terraform consumption `M`
+6. [x] TypeScript Configuration Parsing - Implement external data source with Node.js/ts-node executor to parse serverless.ts files, handle async exports, and convert TypeScript configuration to JSON for Terraform consumption `M` ✅ COMPLETED
 
 7. [x] EventBridge Rules & Schedulers - Translate Serverless eventBridge and schedule events into aws_cloudwatch_event_rule and aws_cloudwatch_event_target resources, supporting both cron/rate expressions and custom event patterns `M` ✅ COMPLETED
 

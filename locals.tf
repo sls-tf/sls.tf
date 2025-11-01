@@ -5,13 +5,11 @@ locals {
     null
   )
 
-  # YAML parsing with friendly error messages
+  # Configuration parsing with YAML and TypeScript support
   parsed_config = var.config_format == "yaml" ? try(
     yamldecode(local.file_content),
     null
-  ) : null
-  # Future: TypeScript parsing support (roadmap item #6)
-  # parsed_config = var.config_format == "typescript" ? ... : local.yaml_config
+  ) : var.config_format == "typescript" ? local.parsed_config_with_typescript : null
 
   # Variable Resolution Integration (Feature #11)
   # The resolved_config from variable_resolution.tf contains the parsed config
@@ -59,7 +57,10 @@ locals {
     local.parsed_config != null ? local.custom_resource_validation_errors : [],
 
     # Variable resolution errors (Roadmap #11)
-    local.parsed_config != null ? local.variable_resolution_errors : []
+    local.parsed_config != null ? local.variable_resolution_errors : [],
+
+    # TypeScript parsing errors (Roadmap #6)
+    var.config_format == "typescript" ? local.typescript_all_errors : []
   )
 
   # Runtime validation errors (strict mode)
