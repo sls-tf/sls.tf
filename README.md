@@ -28,6 +28,19 @@ A Terraform module that parses and validates Serverless Framework configuration 
 - AWS Provider >= 6.0
 - Null Provider >= 3.0
 - Archive Provider >= 2.0
+- External Provider >= 2.0 (for TypeScript support)
+- Node.js >= 14.0.0 (for TypeScript support)
+- npm (for TypeScript support)
+
+### TypeScript Support Requirements
+
+If using TypeScript configuration files (`serverless.ts`):
+
+```bash
+# Install TypeScript parsing dependencies
+cd /path/to/sls.tf/scripts
+npm install
+```
 
 ## Usage
 
@@ -69,6 +82,122 @@ output "service_name" {
 output "functions" {
   value = module.serverless_parser.functions
 }
+```
+
+### TypeScript Configuration Files
+
+You can also use TypeScript configuration files (`serverless.ts`) for better type safety and developer experience:
+
+```hcl
+module "serverless_typescript" {
+  source = "path/to/sls.tf"
+
+  config_path    = "${path.module}/serverless.ts"
+  config_format  = "typescript"
+}
+
+output "service_name" {
+  value = module.serverless_typescript.service_name
+}
+```
+
+#### Example TypeScript Configuration
+
+```typescript
+// serverless.ts
+import { AwsProvider } from '@serverless/types/aws';
+
+const serverlessConfiguration = {
+  service: 'my-typescript-service',
+  frameworkVersion: '3',
+
+  provider: {
+    name: 'aws',
+    runtime: 'nodejs18.x',
+    region: 'us-east-1',
+    stage: 'dev',
+    environment: {
+      NODE_ENV: 'development'
+    }
+  },
+
+  functions: {
+    api: {
+      handler: 'src/handlers/api.handler',
+      description: 'API Gateway handler',
+      memorySize: 512,
+      timeout: 30,
+      events: [
+        {
+          http: {
+            path: '/api/{proxy+}',
+            method: 'any',
+            cors: true
+          }
+        }
+      ]
+    }
+  },
+
+  custom: {
+    // Custom variables with TypeScript support
+    deploymentTime: new Date().toISOString()
+  }
+};
+
+export default serverlessConfiguration;
+```
+
+#### Advanced TypeScript Features
+
+The module supports advanced TypeScript features:
+
+**Async Exports:**
+```typescript
+// Async configuration loading
+async function loadConfig() {
+  // Load environment-specific settings
+  const stage = process.env.NODE_ENV || 'dev';
+
+  return {
+    service: 'my-service',
+    provider: {
+      name: 'aws',
+      stage
+    }
+  };
+}
+
+export default loadConfig;
+```
+
+**Dynamic Configuration:**
+```typescript
+// Dynamic values and imports
+const packageJson = require('./package.json');
+
+export default {
+  service: 'my-service',
+  provider: {
+    name: 'aws',
+    environment: {
+      VERSION: packageJson.version
+    }
+  }
+};
+```
+
+#### TypeScript Prerequisites
+
+Make sure you have the required dependencies installed:
+
+```bash
+# In the module's scripts directory
+cd path/to/sls.tf/scripts
+npm install
+
+# In your project directory (optional, for local testing)
+npm install typescript ts-node
 ```
 
 ### Example serverless.yml
@@ -117,8 +246,8 @@ The module will automatically:
 
 | Name | Type | Default | Required | Description |
 |------|------|---------|----------|-------------|
-| `config_path` | string | - | yes | Path to the Serverless Framework configuration file (serverless.yml) |
-| `config_format` | string | `"yaml"` | no | Format of the configuration file. Currently only `yaml` is supported. |
+| `config_path` | string | - | yes | Path to the Serverless Framework configuration file (serverless.yml or serverless.ts) |
+| `config_format` | string | `"yaml"` | no | Format of the configuration file. Options: `"yaml"` or `"typescript"`. |
 | `lambda_code_path` | string | `"."` | no | Path to Lambda function code directory to package. Defaults to current directory. |
 | `aws_region` | string | `null` | no | Optional AWS region override. If set and differs from serverless.yml region, a warning will be displayed. |
 
@@ -244,12 +373,14 @@ terraform plan
 ### Completed
 - ✅ **#3: IAM Role & Policy Management** - Custom IAM policies from iamRoleStatements
 
+### Completed
+- ✅ **#6: TypeScript Configuration Parsing** - Support for serverless.ts files with async exports, complex TypeScript features, and comprehensive error handling
+
 ### In Progress
 - 🚧 **#4: API Gateway REST API Integration** - HTTP event triggers and API Gateway resources
 
 ### Planned
 - **#5: S3 Event Source Mapping** - S3 bucket notifications
-- **#6: TypeScript Configuration Parsing** - Support for serverless.ts files
 - **#7: EventBridge Rules & Schedulers** - Schedule and event pattern triggers
 - **#8: DynamoDB & SQS Event Sources** - Stream and queue integrations
 - And more...
