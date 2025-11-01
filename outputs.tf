@@ -25,7 +25,7 @@ output "custom" {
 
 output "resources" {
   description = "Resources section for custom AWS resources"
-  value       = try(local.parsed_config.resources, null)
+  value       = try(local.resolved_config.resources, null)
 }
 
 output "package" {
@@ -238,10 +238,10 @@ output "custom_sqs_queue_urls" {
 output "custom_resources_count" {
   description = "Total count of custom resources created"
   value = {
-    s3_buckets             = length(aws_s3_bucket.custom)
-    dynamodb_tables        = length(aws_dynamodb_table.custom)
-    sns_topics             = length(aws_sns_topic.custom)
-    sqs_queues             = length(aws_sqs_queue.custom)
+    s3_buckets               = length(aws_s3_bucket.custom)
+    dynamodb_tables          = length(aws_dynamodb_table.custom)
+    sns_topics               = length(aws_sns_topic.custom)
+    sqs_queues               = length(aws_sqs_queue.custom)
     cloudfront_distributions = length(aws_cloudfront_distribution.custom)
   }
 }
