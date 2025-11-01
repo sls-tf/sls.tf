@@ -238,9 +238,31 @@ output "custom_sqs_queue_urls" {
 output "custom_resources_count" {
   description = "Total count of custom resources created"
   value = {
-    s3_buckets      = length(aws_s3_bucket.custom)
-    dynamodb_tables = length(aws_dynamodb_table.custom)
-    sns_topics      = length(aws_sns_topic.custom)
-    sqs_queues      = length(aws_sqs_queue.custom)
+    s3_buckets             = length(aws_s3_bucket.custom)
+    dynamodb_tables        = length(aws_dynamodb_table.custom)
+    sns_topics             = length(aws_sns_topic.custom)
+    sqs_queues             = length(aws_sqs_queue.custom)
+    cloudfront_distributions = length(aws_cloudfront_distribution.custom)
   }
+}
+
+# CloudFront Distribution outputs (Roadmap #12)
+output "custom_cloudfront_distribution_ids" {
+  description = "Map of custom CloudFront distribution IDs keyed by logical ID"
+  value       = { for k, v in aws_cloudfront_distribution.custom : k => v.id }
+}
+
+output "custom_cloudfront_distribution_arns" {
+  description = "Map of custom CloudFront distribution ARNs keyed by logical ID"
+  value       = { for k, v in aws_cloudfront_distribution.custom : k => v.arn }
+}
+
+output "custom_cloudfront_distribution_domain_names" {
+  description = "Map of custom CloudFront distribution domain names keyed by logical ID"
+  value       = { for k, v in aws_cloudfront_distribution.custom : k => v.domain_name }
+}
+
+output "custom_cloudfront_distribution_hosted_zone_ids" {
+  description = "Map of custom CloudFront distribution hosted zone IDs keyed by logical ID"
+  value       = { for k, v in aws_cloudfront_distribution.custom : k => v.hosted_zone_id }
 }

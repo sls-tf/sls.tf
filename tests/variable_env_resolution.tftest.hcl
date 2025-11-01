@@ -5,7 +5,7 @@ run "test_resolve_env_with_value" {
   command = plan
 
   variables {
-    config_path = "${path.module}/fixtures/variables-env.yml"
+    config_path = "tests/fixtures/variables-env.yml"
     environment_vars = {
       "STAGE"      = "production"
       "AWS_REGION" = "us-west-2"
@@ -25,7 +25,7 @@ run "test_env_with_default_value_when_missing" {
   command = plan
 
   variables {
-    config_path = "${path.module}/fixtures/variables-env.yml"
+    config_path = "tests/fixtures/variables-env.yml"
     environment_vars = {
       # Intentionally not providing AWS_REGION or API_KEY
       "STAGE"    = "dev"
@@ -46,7 +46,7 @@ run "test_env_variables_parsed_structure" {
   command = plan
 
   variables {
-    config_path = "${path.module}/fixtures/variables-env.yml"
+    config_path = "tests/fixtures/variables-env.yml"
     environment_vars = {
       "STAGE" = "test"
     }
@@ -63,7 +63,7 @@ run "test_strict_mode_unresolved_variables" {
   command = plan
 
   variables {
-    config_path                = "${path.module}/fixtures/variables-env.yml"
+    config_path                = "tests/fixtures/variables-env.yml"
     strict_variable_resolution = true
     environment_vars = {
       # Missing STAGE and NODE_ENV - should cause errors in strict mode
@@ -81,7 +81,7 @@ run "test_non_strict_mode_allows_unresolved" {
   command = plan
 
   variables {
-    config_path                = "${path.module}/fixtures/variables-env.yml"
+    config_path                = "tests/fixtures/variables-env.yml"
     strict_variable_resolution = false
     environment_vars           = {}
   }
