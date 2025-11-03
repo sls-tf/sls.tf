@@ -1,7 +1,8 @@
 ---
 title: Welcome to sls.tf
 description: The comprehensive Serverless Framework to Terraform conversion module
-layout: ../../layouts/Layout.astro
+sidebar:
+  order: -1
 ---
 
 import { Badge } from '@astrojs/starlight/components';
