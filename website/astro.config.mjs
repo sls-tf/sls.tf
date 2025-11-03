@@ -3,14 +3,11 @@ import starlight from '@astrojs/starlight';
 import tailwind from '@astrojs/tailwind';
 
 export default defineConfig({
+  site: 'https://sls.tf',
   integrations: [
     starlight({
       title: 'sls.tf',
       description: 'Serverless Framework to Terraform Conversion Module',
-      logo: {
-        src: './src/assets/logo.svg',
-        replacesTitle: true
-      },
       social: {
         github: 'https://github.com/your-org/sls.tf',
         twitter: 'https://twitter.com/your-handle'
