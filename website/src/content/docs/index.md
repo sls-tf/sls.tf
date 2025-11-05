@@ -1,23 +1,24 @@
 ---
 title: Welcome to sls.tf
 description: The comprehensive Serverless Framework to Terraform conversion module
-sidebar:
-  order: -1
 ---
 
-import { Badge } from '@astrojs/starlight/components';
+# Welcome to sls.tf
 
-# sls.tf
+sls.tf is a comprehensive Terraform module that converts Serverless Framework configurations to production-ready AWS infrastructure.
 
-<div class="hero">
-  <h1>Serverless Framework to Terraform</h1>
-  <p>Convert your Serverless Framework configurations to production-ready AWS infrastructure with Terraform.</p>
+## Getting Started
 
-  <div class="hero-buttons">
-    <a href="/docs/quick-start" class="btn">Get Started</a>
-    <a href="/docs/introduction" class="btn secondary">Learn More</a>
-  </div>
-</div>
+- [Quick Start](./quick-start.md)
+- [Installation](./installation.md)
+- [Configuration](./configuration.md)
+
+## Features
+
+- **Lambda Functions**: Complete with IAM roles and permissions
+- **API Gateway**: REST APIs with CORS and custom domains
+- **DynamoDB**: Tables with streams, TTL, and global indexes
+- **TypeScript Support**: Async exports and dynamic values
 
 ## 🚀 What is sls.tf?
 
