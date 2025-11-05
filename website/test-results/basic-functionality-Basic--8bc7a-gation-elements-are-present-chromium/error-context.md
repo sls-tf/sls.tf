@@ -1,0 +1,121 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e4]:
+  - generic [ref=e5]:
+    - checkbox "Use dark theme" [ref=e6]
+    - generic [ref=e7] [cursor=pointer]:
+      - img [ref=e8]
+      - img [ref=e12]
+      - generic [ref=e16]: Use dark theme
+  - banner [ref=e17]:
+    - generic [ref=e18]:
+      - heading "TypeError" [level=2] [ref=e19]
+      - heading "An error occurred." [level=1] [ref=e20]
+    - img [ref=e23]
+  - generic [ref=e27]:
+    - img [ref=e29]
+    - generic [ref=e31]: Cannot read properties of undefined (reading 'some')
+  - generic [ref=e32]:
+    - generic [ref=e33]:
+      - heading "utils/head.ts:43:14" [level=2] [ref=e34]
+      - button "Open in editor" [ref=e36]:
+        - text: Open in editor
+        - img [ref=e37]
+    - code [ref=e42]:
+      - generic [ref=e43]: "import { type HeadConfig, HeadConfigSchema, type HeadUserConfig } from '../schemas/head';"
+      - generic [ref=e45]: const HeadSchema = HeadConfigSchema();
+      - generic [ref=e47]: /** Create a fully parsed, merged, and sorted head entry array from multiple sources. */
+      - generic [ref=e48]: "export function createHead(defaults: HeadUserConfig, ...heads: HeadConfig[]) {"
+      - generic [ref=e49]: let head = HeadSchema.parse(defaults);
+      - generic [ref=e50]: "for (const next of heads) {"
+      - generic [ref=e51]: head = mergeHead(head, next);
+      - generic [ref=e52]: "}"
+      - generic [ref=e53]: return sortHead(head);
+      - generic [ref=e54]: "}"
+      - generic [ref=e56]: /**
+      - generic [ref=e57]: "* Test if a head config object contains a matching `<title>` or `<meta>` or `<link rel=\"canonical\">` tag."
+      - generic [ref=e58]: "*"
+      - generic [ref=e59]: "* For example, will return true if `head` already contains"
+      - generic [ref=e60]: "* `<meta name=\"description\" content=\"A\">` and the passed `tag`"
+      - generic [ref=e61]: "* is `<meta name=\"description\" content=\"B\">`. Tests against `name`,"
+      - generic [ref=e62]: "* `property`, and `http-equiv` attributes for `<meta>` tags."
+      - generic [ref=e63]: "*/"
+      - generic [ref=e64]: "function hasTag(head: HeadConfig, entry: HeadConfig[number]): boolean {"
+      - generic [ref=e65]: "switch (entry.tag) {"
+      - generic [ref=e66]: "case 'title':"
+      - generic [ref=e67]: "return head.some(({ tag }) => tag === 'title');"
+      - generic [ref=e68]: "case 'meta':"
+      - generic [ref=e69]: return hasOneOf(head, entry, ['name', 'property', 'http-equiv']);
+      - generic [ref=e70]: "case 'link':"
+      - generic [ref=e71]: "return head.some(({ attrs }) => attrs.rel === 'canonical');"
+      - generic [ref=e72]: "default:"
+      - generic [ref=e73]: return false;
+      - generic [ref=e74]: "}"
+      - generic [ref=e75]: "}"
+      - generic [ref=e77]: /**
+      - generic [ref=e78]: "* Test if a head config object contains a tag of the same type"
+      - generic [ref=e79]: "* as `entry` and a matching attribute for one of the passed `keys`."
+      - generic [ref=e80]: "*/"
+      - generic [ref=e81]: "function hasOneOf(head: HeadConfig, entry: HeadConfig[number], keys: string[]): boolean {"
+      - generic [ref=e82]: const attr = getAttr(keys, entry);
+      - generic [ref=e83]: if (!attr) return false;
+      - generic [ref=e84]: const [key, val] = attr;
+      - generic [ref=e85]: "return head.some(({ tag, attrs }) => tag === entry.tag && attrs[key] === val);"
+      - generic [ref=e86]: ^
+      - generic [ref=e87]: "}"
+      - generic [ref=e89]: /** Find the first matching key–value pair in a head entry’s attributes. */
+      - generic [ref=e90]: function getAttr(
+      - generic [ref=e91]: "keys: string[],"
+      - generic [ref=e92]: "entry: HeadConfig[number]"
+      - generic [ref=e93]: "): [key: string, value: string | boolean] | undefined {"
+      - generic [ref=e94]: "let attr: [string, string | boolean] | undefined;"
+      - generic [ref=e95]: "for (const key of keys) {"
+      - generic [ref=e96]: const val = entry.attrs[key];
+      - generic [ref=e97]: "if (val) {"
+      - generic [ref=e98]: attr = [key, val];
+      - generic [ref=e99]: break;
+      - generic [ref=e100]: "}"
+      - generic [ref=e101]: "}"
+      - generic [ref=e102]: return attr;
+      - generic [ref=e103]: "}"
+      - generic [ref=e105]: /** Merge two heads, overwriting entries in the first head that exist in the second. */
+      - generic [ref=e106]: "function mergeHead(oldHead: HeadConfig, newHead: HeadConfig) {"
+      - generic [ref=e107]: return [...oldHead.filter((tag) => !hasTag(newHead, tag)), ...newHead];
+      - generic [ref=e108]: "}"
+      - generic [ref=e110]: /** Sort head tags to place important tags first and relegate “SEO” meta tags. */
+      - generic [ref=e111]: "function sortHead(head: HeadConfig) {"
+      - generic [ref=e112]: "return head.sort((a, b) => {"
+      - generic [ref=e113]: const aImportance = getImportance(a);
+      - generic [ref=e114]: const bImportance = getImportance(b);
+      - generic [ref=e115]: "return aImportance > bImportance ? -1 : bImportance > aImportance ? 1 : 0;"
+      - generic [ref=e116]: "});"
+      - generic [ref=e117]: "}"
+      - generic [ref=e119]: /** Get the relative importance of a specific head tag. */
+      - generic [ref=e120]: "function getImportance(entry: HeadConfig[number]) {"
+      - generic [ref=e121]: // 1. Important meta tags.
+      - generic [ref=e122]: if (
+      - generic [ref=e123]: entry.tag === 'meta' &&
+      - generic [ref=e124]: ('charset' in entry.attrs || 'http-equiv' in entry.attrs || entry.attrs.name === 'viewport')
+      - generic [ref=e125]: ") {"
+      - generic [ref=e126]: return 100;
+      - generic [ref=e127]: "}"
+      - generic [ref=e128]: // 2. Page title
+      - generic [ref=e129]: if (entry.tag === 'title') return 90;
+      - generic [ref=e130]: // 3. Anything that isn’t an SEO meta tag.
+      - generic [ref=e131]: "if (entry.tag !== 'meta') {"
+      - generic [ref=e132]: // The default favicon should be below any extra icons that the user may have set
+      - generic [ref=e133]: // because if several icons are equally appropriate, the last one is used and we
+      - generic [ref=e134]: // want to use the SVG icon when supported.
+      - generic [ref=e135]: "if (entry.tag === 'link' && 'rel' in entry.attrs && entry.attrs.rel === 'shortcut icon') {"
+      - generic [ref=e136]: return 70;
+      - generic [ref=e137]: "}"
+      - generic [ref=e138]: return 80;
+      - generic [ref=e139]: "}"
+      - generic [ref=e140]: // 4. SEO meta tags.
+      - generic [ref=e141]: return 0;
+      - generic [ref=e142]: "}"
+  - generic [ref=e144]:
+    - heading "Stack Trace" [level=2] [ref=e145]
+    - generic [ref=e146]: "TypeError: Cannot read properties of undefined (reading 'some') at hasOneOf (/home/tom/p/t/sls.tf/website/node_modules/@astrojs/starlight/utils/head.ts:43:14) at hasTag (/home/tom/p/t/sls.tf/website/node_modules/@astrojs/starlight/utils/head.ts:27:11) at /home/tom/p/t/sls.tf/website/node_modules/@astrojs/starlight/utils/head.ts:64:38 at Array.filter (<anonymous>) at mergeHead (/home/tom/p/t/sls.tf/website/node_modules/@astrojs/starlight/utils/head.ts:64:21) at Module.createHead (/home/tom/p/t/sls.tf/website/node_modules/@astrojs/starlight/utils/head.ts:9:10) at /home/tom/p/t/sls.tf/website/node_modules/@astrojs/starlight/components/Head.astro:97:14 at AstroComponentInstance.Head [as factory] (/home/tom/p/t/sls.tf/website/node_modules/astro/dist/runtime/server/astro-component.js:16:12) at AstroComponentInstance.init (/home/tom/p/t/sls.tf/website/node_modules/astro/dist/runtime/server/render/astro/instance.js:32:29) at AstroComponentInstance.render (/home/tom/p/t/sls.tf/website/node_modules/astro/dist/runtime/server/render/astro/instance.js:42:36)"
+```

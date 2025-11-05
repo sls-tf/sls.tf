@@ -1,0 +1,276 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="sls.tf - Serverless Framework to Terraform Conversion Module">
+  <main>
+    <div class="hero">
+      <h1>sls.tf</h1>
+      <p class="subtitle">Serverless Framework to Terraform Conversion Module</p>
+      <p class="description">
+        A comprehensive Terraform module that seamlessly converts Serverless Framework configurations
+        into production-ready AWS infrastructure.
+      </p>
+
+      <div class="hero-buttons">
+        <a href="/docs/introduction" class="btn primary">Get Started</a>
+        <a href="/docs/quick-start" class="btn secondary">Quick Start</a>
+      </div>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <h3>📋 Parse Serverless Config</h3>
+        <p>Support for both YAML and TypeScript configurations with comprehensive validation and error handling.</p>
+      </div>
+
+      <div class="feature-card">
+        <h3>⚡ Generate Infrastructure</h3>
+        <p>Automatically creates Lambda functions, API Gateway, DynamoDB tables, and all necessary AWS resources.</p>
+      </div>
+
+      <div class="feature-card">
+        <h3>🔧 Advanced Features</h3>
+        <p>Variable resolution, custom resources, EventBridge integration, and TypeScript support with async exports.</p>
+      </div>
+
+      <div class="feature-card">
+        <h3>🛡️ Production Ready</h3>
+        <p>Built-in best practices, security hardening, monitoring, and disaster recovery capabilities.</p>
+      </div>
+    </div>
+
+    <section class="getting-started">
+      <h2>Getting Started</h2>
+      <div class="steps">
+        <div class="step">
+          <h3>1. Add sls.tf to Your Project</h3>
+          <pre><code>git submodule add https://github.com/your-org/sls.tf.git modules/sls.tf
+git submodule update --init --recursive</code></pre>
+        </div>
+
+        <div class="step">
+          <h3>2. Create Terraform Configuration</h3>
+          <pre><code>module "serverless_service" {
+  source       = "./modules/sls.tf"
+  config_path  = "\${path.module}/serverless.yml"
+  lambda_code_path = "\${path.module}/src"
+}</code></pre>
+        </div>
+
+        <div class="step">
+          <h3>3. Deploy Your Infrastructure</h3>
+          <pre><code>terraform init
+terraform plan
+terraform apply</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <section class="navigation">
+      <h2>Documentation</h2>
+      <div class="nav-grid">
+        <a href="/docs/introduction" class="nav-link">Introduction</a>
+        <a href="/docs/quick-start" class="nav-link">Quick Start</a>
+        <a href="/docs/installation" class="nav-link">Installation</a>
+        <a href="/docs/configuration" class="nav-link">Configuration</a>
+        <a href="/docs/api/variables" class="nav-link">API: Variables</a>
+        <a href="/docs/api/outputs" class="nav-link">API: Outputs</a>
+        <a href="/docs/api/resource-types" class="nav-link">API: Resources</a>
+        <a href="/docs/features/lambda-functions" class="nav-link">Features: Lambda</a>
+        <a href="/docs/features/typescript" class="nav-link">Features: TypeScript</a>
+        <a href="/docs/examples/basic-service" class="nav-link">Examples: Basic</a>
+        <a href="/docs/examples/typescript-config" class="nav-link">Examples: TypeScript</a>
+      </div>
+    </section>
+  </main>
+</Layout>
+
+<style>
+  main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+
+  .hero {
+    text-align: center;
+    margin-bottom: 4rem;
+    padding: 4rem 0;
+  }
+
+  .hero h1 {
+    font-size: 4rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .subtitle {
+    font-size: 1.5rem;
+    color: #6b7280;
+    margin-bottom: 1rem;
+    font-weight: 300;
+  }
+
+  .description {
+    font-size: 1.1rem;
+    color: #4b5563;
+    max-width: 600px;
+    margin: 0 auto 2rem;
+    line-height: 1.6;
+  }
+
+  .hero-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    padding: 0.75rem 2rem;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s;
+    display: inline-block;
+  }
+
+  .btn.primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+  }
+
+  .btn.primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+  }
+
+  .btn.secondary {
+    background: #f3f4f6;
+    color: #374151;
+    border: 1px solid #e5e7eb;
+  }
+
+  .btn.secondary:hover {
+    background: #e5e7eb;
+    transform: translateY(-1px);
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 4rem;
+  }
+
+  .feature-card {
+    background: #f9fafb;
+    padding: 2rem;
+    border-radius: 1rem;
+    border: 1px solid #e5e7eb;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .feature-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  }
+
+  .feature-card h3 {
+    margin-bottom: 1rem;
+    color: #1f2937;
+  }
+
+  .getting-started {
+    margin-bottom: 4rem;
+  }
+
+  .getting-started h2 {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 3rem;
+    color: #1f2937;
+  }
+
+  .steps {
+    display: grid;
+    gap: 2rem;
+  }
+
+  .step {
+    background: #f9fafb;
+    padding: 2rem;
+    border-radius: 1rem;
+    border-left: 4px solid #667eea;
+  }
+
+  .step h3 {
+    margin-bottom: 1rem;
+    color: #1f2937;
+  }
+
+  .step pre {
+    background: #1f2937;
+    color: #f9fafb;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    overflow-x: auto;
+    font-family: 'Monaco', 'Menlo', monospace;
+  }
+
+  .navigation h2 {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+    color: #1f2937;
+  }
+
+  .nav-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+
+  .nav-link {
+    display: block;
+    padding: 1rem;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    color: #374151;
+    text-align: center;
+    transition: all 0.2s;
+  }
+
+  .nav-link:hover {
+    background: #667eea;
+    color: white;
+    transform: translateY(-2px);
+  }
+
+  @media (max-width: 768px) {
+    main {
+      padding: 1rem;
+    }
+
+    .hero h1 {
+      font-size: 3rem;
+    }
+
+    .hero-buttons {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .features-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
