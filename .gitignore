@@ -9,3 +9,6 @@
 
 # LocalStack
 .localstack/data/
+
+# Dependencies
+node_modules/
