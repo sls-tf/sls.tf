@@ -28,7 +28,7 @@ test.describe('Accessibility Tests', () => {
     await page.goto('/');
 
     // Check for main navigation with ARIA label
-    const mainNav = page.locator('nav[aria-label="Main"], nav[aria-label="main"], nav[role="navigation"]');
+    const mainNav = page.locator('nav[aria-label="Main navigation"], nav[aria-label="Main"], nav[aria-label="main"], nav[role="navigation"]');
     await expect(mainNav).toBeVisible();
 
     // Check navigation links have accessible names

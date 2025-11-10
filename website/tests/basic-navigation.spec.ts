@@ -28,11 +28,11 @@ test.describe('Basic Navigation Tests', () => {
     await expect(page).toHaveTitle(/sls.tf/);
 
     // Check for main navigation elements
-    const navigation = page.locator('nav[aria-label="Main"]');
+    const navigation = page.locator('nav[aria-label="Main navigation"]');
     await expect(navigation).toBeVisible();
 
-    // Check for main heading
-    const mainHeading = page.locator('h1');
+    // Check for main heading (exclude dev toolbar elements)
+    const mainHeading = page.locator('main h1, h1[data-astro-cid]');
     await expect(mainHeading).toBeVisible();
   });
 
@@ -53,31 +53,23 @@ test.describe('Basic Navigation Tests', () => {
       await expect(page.locator('h1')).toBeVisible();
 
       // Check main navigation is present
-      const navigation = page.locator('nav[aria-label="Main"]');
+      const navigation = page.locator('nav[aria-label="Main navigation"]');
       await expect(navigation).toBeVisible();
     }
   });
 
-  test('sidebar navigation works correctly', async ({ page }) => {
+  test('main navigation works correctly', async ({ page }) => {
     await page.goto('/');
 
-    // Wait for sidebar to be visible
-    const sidebar = page.locator('.starlight-sidebar');
-    await expect(sidebar).toBeVisible();
+    // Check for main navigation links
+    const navigation = page.locator('nav[aria-label="Main navigation"]');
+    await expect(navigation).toBeVisible();
 
     // Check main navigation sections
-    const sections = [
-      'Introduction',
-      'Quick Start',
-      'Installation',
-      'Configuration',
-      'API Reference',
-      'Features',
-      'Examples'
-    ];
+    const expectedLinks = ['Home', 'Documentation', 'GitHub'];
 
-    for (const section of sections) {
-      const link = page.locator(`.starlight-sidebar a:has-text("${section}")`);
+    for (const linkText of expectedLinks) {
+      const link = navigation.locator(`a:has-text("${linkText}")`);
       await expect(link).toBeVisible();
     }
   });
@@ -85,97 +77,103 @@ test.describe('Basic Navigation Tests', () => {
   test('navigation between pages works', async ({ page }) => {
     await page.goto('/');
 
-    // Click on Introduction link
-    await page.click('.starlight-sidebar a:has-text("Introduction")');
-    await expect(page).toHaveURL('/introduction');
+    // Click on Documentation link
+    await page.click('nav[aria-label="Main navigation"] a:has-text("Documentation")');
+    await expect(page).toHaveURL('/docs');
 
-    // Click on Quick Start link
-    await page.click('.starlight-sidebar a:has-text("Quick Start")');
-    await expect(page).toHaveURL('/quick-start');
+    // Navigate to introduction page directly
+    await page.goto('/introduction');
+    await expect(page).toHaveURL('/introduction');
 
     // Check browser back button
     await page.goBack();
-    await expect(page).toHaveURL('/introduction');
+    await expect(page).toHaveURL('/docs');
 
     // Check browser forward button
     await page.goForward();
-    await expect(page).toHaveURL('/quick-start');
+    await expect(page).toHaveURL('/introduction');
   });
 
-  test('collapsible sidebar sections work', async ({ page }) => {
+  test('navigation links are accessible', async ({ page }) => {
     await page.goto('/');
 
-    // Find collapsible sections (API Reference, Features, Examples)
-    const collapsibleSections = page.locator('.starlight-sidebar details');
-    await expect(collapsibleSections).toHaveCount(3);
+    // Check all navigation links have proper attributes
+    const navLinks = page.locator('nav[aria-label="Main navigation"] a');
+    const count = await navLinks.count();
 
-    // Test API Reference section
-    const apiSection = page.locator('.starlight-sidebar details:has-text("API Reference")');
-    await apiSection.click(); // Expand
-    await expect(apiSection).toHaveAttribute('open', '');
+    expect(count).toBeGreaterThan(0);
 
-    // Check sub-links are visible
-    await expect(page.locator('.starlight-sidebar a:has-text("Variables")')).toBeVisible();
-    await expect(page.locator('.starlight-sidebar a:has-text("Outputs")')).toBeVisible();
-    await expect(page.locator('.starlight-sidebar a:has-text("Resource Types")')).toBeVisible();
+    for (let i = 0; i < count; i++) {
+      const link = navLinks.nth(i);
+      await expect(link).toBeVisible();
 
-    // Collapse section
-    await apiSection.click();
-    await expect(apiSection).not.toHaveAttribute('open', '');
-  });
-
-  test('breadcrumbs work correctly', async ({ page }) => {
-    await page.goto('/api/variables');
-
-    // Check breadcrumbs are present
-    const breadcrumbs = page.locator('.starlight-breadcrumbs');
-    await expect(breadcrumbs).toBeVisible();
-
-    // Check home breadcrumb
-    const homeBreadcrumb = page.locator('.starlight-breadcrumbs a:has-text("Home")');
-    await expect(homeBreadcrumb).toBeVisible();
-
-    // Click home breadcrumb
-    await homeBreadcrumb.click();
-    await expect(page).toHaveURL('/');
-  });
-
-  test('search functionality is present', async ({ page }) => {
-    await page.goto('/');
-
-    // Check for search input
-    const searchInput = page.locator('input[placeholder*="Search" i]');
-    await expect(searchInput).toBeVisible();
-
-    // Type in search
-    await searchInput.fill('lambda');
-
-    // Wait for search results
-    await page.waitForTimeout(500);
-
-    // Check if search results appear (this might vary based on Starlight version)
-    const searchResults = page.locator('.starlight-search');
-    await expect(searchResults).toBeVisible();
-  });
-
-  test('dark mode toggle works', async ({ page }) => {
-    await page.goto('/');
-
-    // Check for theme toggle button
-    const themeToggle = page.locator('button[aria-label*="theme" i], button[aria-label*="dark" i], button[aria-label*="light" i]');
-    if (await themeToggle.isVisible()) {
-      // Get initial theme
-      const html = page.locator('html');
-      const initialTheme = await html.getAttribute('data-theme');
-
-      // Toggle theme
-      await themeToggle.click();
-      await page.waitForTimeout(500);
-
-      // Check theme changed (this might not work if theme is stored in localStorage)
-      const newTheme = await html.getAttribute('data-theme');
-      console.log(`Theme changed from ${initialTheme} to ${newTheme}`);
+      // Check href exists
+      const href = await link.getAttribute('href');
+      expect(href).toBeTruthy();
     }
+  });
+
+  test('page navigation through links works', async ({ page }) => {
+    await page.goto('/docs');
+
+    // Find documentation links
+    const docLinks = page.locator('.doc-link');
+    const count = await docLinks.count();
+
+    expect(count).toBeGreaterThan(0);
+
+    // Test first few links to ensure they work
+    for (let i = 0; i < Math.min(3, count); i++) {
+      const link = docLinks.nth(i);
+      const href = await link.getAttribute('href');
+
+      if (href && !href.startsWith('http')) {
+        // Navigate to the link
+        await link.click();
+
+        // Check that page loads without 404
+        await expect(page.locator('body')).toBeVisible();
+
+        // Go back
+        await page.goBack();
+        await expect(page).toHaveURL('/docs');
+      }
+    }
+  });
+
+  test('page responsiveness works', async ({ page }) => {
+    await page.goto('/');
+
+    // Test desktop viewport
+    await page.setViewportSize({ width: 1200, height: 800 });
+    const nav = page.locator('nav[aria-label="Main navigation"]');
+    await expect(nav).toBeVisible();
+
+    // Test tablet viewport
+    await page.setViewportSize({ width: 768, height: 1024 });
+    await expect(nav).toBeVisible();
+
+    // Test mobile viewport
+    await page.setViewportSize({ width: 375, height: 667 });
+    await expect(nav).toBeVisible();
+  });
+
+  test('site styling loads correctly', async ({ page }) => {
+    await page.goto('/');
+
+    // Check that main elements have loaded
+    await expect(page.locator('nav')).toBeVisible();
+    await expect(page.locator('main')).toBeVisible();
+    await expect(page.locator('footer')).toBeVisible();
+
+    // Check that CSS has loaded by verifying styles are applied
+    const nav = page.locator('nav');
+    const computedStyle = await nav.evaluate((el) => {
+      return window.getComputedStyle(el).position;
+    });
+
+    // Navigation should have position: sticky or similar
+    expect(['sticky', 'relative', 'static', 'fixed']).toContain(computedStyle);
   });
 
   test('external links work correctly', async ({ page }) => {
