@@ -15,14 +15,22 @@
 
 # External data source for TypeScript configuration parsing
 # This executes a Node.js script with ts-node to parse TypeScript files
+# It supports both local NPM installation and module script paths
 data "external" "typescript_config" {
   count = var.config_format == "typescript" ? 1 : 0
 
-  program = ["node", "${path.module}/scripts/typescript-parser.js"]
+  # Try to find the parser script in local node_modules first, then fall back to module path
+  program = [
+    "node",
+    fileexists("${path.cwd}/node_modules/sls-tf/scripts/typescript-parser.js")
+      ? "${path.cwd}/node_modules/sls-tf/scripts/typescript-parser.js"
+      : "${path.module}/scripts/typescript-parser.js"
+  ]
 
   query = {
     config_path      = var.config_path
     working_directory = path.cwd
+    using_local_npm   = fileexists("${path.cwd}/node_modules/sls-tf/scripts/typescript-parser.js")
   }
 }
 
@@ -39,9 +47,12 @@ locals {
   ) : null
 
   # Check if TypeScript dependencies are available
+  # Supports both local NPM installation and module paths
   typescript_dependencies_check = var.config_format == "typescript" ? (
-    fileexists("${path.module}/scripts/typescript-parser.js") &&
-    fileexists("${path.module}/scripts/package.json")
+    (fileexists("${path.cwd}/node_modules/sls-tf/scripts/typescript-parser.js") &&
+     fileexists("${path.cwd}/node_modules/sls-tf/scripts/package.json")) ||
+    (fileexists("${path.module}/scripts/typescript-parser.js") &&
+     fileexists("${path.module}/scripts/package.json"))
   ) : true
 
   # Enhanced file content handling for TypeScript
