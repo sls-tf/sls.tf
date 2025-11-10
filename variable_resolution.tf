@@ -338,75 +338,8 @@ locals {
 
   config_with_env_resolved = local.config_with_env_pass3
 
-  # ============================================================================
-  # CloudFront-specific Variable Resolution
-  # ============================================================================
-
-  # Apply variable resolution to all resources in one pass
-  # This handles ${self:} variables in S3 bucket names and CloudFront origins
-  all_resources_resolved = local.config_with_env_resolved != null && try(local.config_with_env_resolved.resources.Resources, null) != null ? {
-    Resources = {
-      for resource_id, resource in local.config_with_env_resolved.resources.Resources :
-      resource_id => try(resource.Type, "") == "AWS::CloudFront::Distribution" ? merge(
-        resource,
-        {
-          Properties = merge(
-            resource.Properties,
-            {
-              DistributionConfig = merge(
-                resource.Properties.DistributionConfig,
-                {
-                  Origins = [
-                    for origin in resource.Properties.DistributionConfig.Origins :
-                    merge(
-                      origin,
-                      {
-                        DomainName = can(tostring(origin.DomainName)) && can(regex("\\$\\{self:", tostring(origin.DomainName))) ? replace(
-                          replace(
-                            tostring(origin.DomainName),
-                            "$${self:provider.stage}",
-                            tostring(try(local.traverse_path["provider.stage"], "$${self:provider.stage}"))
-                          ),
-                          "$${self:service}",
-                          tostring(try(local.traverse_path["service"], "$${self:service}"))
-                        ) : origin.DomainName
-                      }
-                    )
-                  ]
-                }
-              )
-            }
-          )
-        }
-        ) : try(resource.Type, "") == "AWS::S3::Bucket" ? (
-        resource.Properties.BucketName != null ? merge(
-          resource,
-          {
-            Properties = merge(
-              resource.Properties,
-              {
-                BucketName = can(tostring(resource.Properties.BucketName)) && can(regex("\\$\\{self:", tostring(resource.Properties.BucketName))) ? replace(
-                  replace(
-                    tostring(resource.Properties.BucketName),
-                    "$${self:provider.stage}",
-                    tostring(try(local.traverse_path["provider.stage"], "$${self:provider.stage}"))
-                  ),
-                  "$${self:service}",
-                  tostring(try(local.traverse_path["service"], "$${self:service}"))
-                ) : resource.Properties.BucketName
-              }
-            )
-          }
-        ) : resource
-      ) : resource
-    }
-  } : null
-
-  # Final resolved config - combines ${self:} and ${env:} resolution with resources processing
-  resolved_config = local.config_with_env_resolved != null ? merge(
-    local.config_with_env_resolved,
-    local.all_resources_resolved != null ? { resources = local.all_resources_resolved } : {}
-  ) : local.config_with_env_resolved
+  # Final resolved config - combines ${self:} and ${env:} resolution
+  resolved_config = local.config_with_env_resolved
 
   # Variable resolution errors - collect unresolved variables if strict mode
   variable_resolution_errors = var.strict_variable_resolution && local.resolved_config != null ? flatten([
