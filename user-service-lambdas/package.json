@@ -1,0 +1,9 @@
+{
+  "name": "user-service-lambdas",
+  "version": "1.0.0",
+  "description": "Lambda functions for user service",
+  "main": "handler.js",
+  "dependencies": {
+    "aws-lambda": "^1.0.7"
+  }
+}

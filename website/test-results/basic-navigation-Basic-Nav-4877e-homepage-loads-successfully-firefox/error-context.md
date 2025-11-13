@@ -1,0 +1,85 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - link "Skip to main content" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - navigation "Main navigation" [ref=e3]:
+    - generic [ref=e4]:
+      - link "sls.tf" [ref=e6] [cursor=pointer]:
+        - /url: /
+      - generic [ref=e7]:
+        - link "Home" [ref=e8] [cursor=pointer]:
+          - /url: /
+        - link "Documentation" [ref=e9] [cursor=pointer]:
+          - /url: /docs
+        - link "GitHub" [ref=e10] [cursor=pointer]:
+          - /url: https://github.com/your-org/sls.tf
+  - main [ref=e11]:
+    - generic [ref=e12]:
+      - generic [ref=e14]:
+        - heading "sls.tf" [level=1] [ref=e15]
+        - heading "Serverless Framework to Terraform Conversion" [level=2] [ref=e16]
+        - paragraph [ref=e17]: Transform your Serverless Framework applications into production-ready Terraform infrastructure with a single module. Deploy AWS resources with confidence using infrastructure as code best practices.
+        - generic [ref=e18]:
+          - link "Get Started" [ref=e19] [cursor=pointer]:
+            - /url: /docs
+          - link "View on GitHub" [ref=e20] [cursor=pointer]:
+            - /url: https://github.com/your-org/sls.tf
+      - generic [ref=e21]:
+        - generic [ref=e22]:
+          - heading "Powerful Features" [level=2] [ref=e23]
+          - paragraph [ref=e24]: Everything you need to convert and deploy serverless applications
+        - generic [ref=e25]:
+          - generic [ref=e26]:
+            - generic [ref=e27]: 📋
+            - heading "Configuration Parsing" [level=3] [ref=e28]
+            - paragraph [ref=e29]: Support for both YAML and TypeScript configurations with comprehensive validation and intelligent error handling.
+          - generic [ref=e30]:
+            - generic [ref=e31]: ⚡
+            - heading "Auto-Generation" [level=3] [ref=e32]
+            - paragraph [ref=e33]: Automatically creates Lambda functions, API Gateway, DynamoDB tables, and all necessary AWS resources with proper IAM roles.
+          - generic [ref=e34]:
+            - generic [ref=e35]: 🔧
+            - heading "Advanced Support" [level=3] [ref=e36]
+            - paragraph [ref=e37]: Variable resolution, custom CloudFormation resources, EventBridge integration, and TypeScript async exports.
+          - generic [ref=e38]:
+            - generic [ref=e39]: 🛡️
+            - heading "Production Ready" [level=3] [ref=e40]
+            - paragraph [ref=e41]: Built-in best practices, security hardening, monitoring integration, and disaster recovery capabilities.
+      - generic [ref=e42]:
+        - generic [ref=e43]:
+          - heading "Getting Started" [level=2] [ref=e44]
+          - paragraph [ref=e45]: Convert your Serverless Framework application in minutes
+        - generic [ref=e46]:
+          - generic [ref=e47]:
+            - generic [ref=e48]: "1"
+            - generic [ref=e49]:
+              - heading "Add sls.tf Module" [level=3] [ref=e50]
+              - paragraph [ref=e51]: Add the sls.tf submodule to your project and initialize it.
+          - generic [ref=e52]:
+            - generic [ref=e53]: "2"
+            - generic [ref=e54]:
+              - heading "Create Terraform Config" [level=3] [ref=e55]
+              - paragraph [ref=e56]: Create a simple Terraform configuration that references your serverless.yml file.
+          - generic [ref=e57]:
+            - generic [ref=e58]: "3"
+            - generic [ref=e59]:
+              - heading "Deploy Infrastructure" [level=3] [ref=e60]
+              - paragraph [ref=e61]: Run Terraform commands to deploy your converted infrastructure to AWS.
+  - contentinfo [ref=e62]:
+    - paragraph [ref=e64]: © 2025 sls.tf • Serverless Framework to Terraform conversion module
+  - generic [ref=e67]:
+    - button "Menu" [ref=e68]:
+      - img [ref=e70]
+      - generic: Menu
+    - button "Inspect" [ref=e74]:
+      - img [ref=e76]
+      - generic: Inspect
+    - button "Audit" [ref=e78]:
+      - img [ref=e80]
+      - generic: Audit
+    - button "Settings" [ref=e83]:
+      - img [ref=e85]
+      - generic: Settings
+```
