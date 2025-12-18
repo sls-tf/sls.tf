@@ -9,3 +9,5 @@
 
 # LocalStack
 .localstack/data/
+
+website/node_modules/
