@@ -22,11 +22,13 @@
 
 11. [x] Variable Resolution Engine - Implement resolution for Serverless variable syntax (${self:}, ${env:}, ${opt:}, ${cf:}) by mapping to Terraform variables, local values, and data source lookups where applicable `M` ✅ COMPLETED (Phase 1: ${self:} and ${env:} support)
 
-12. [ ] CloudFront Distribution Support - Generate aws_cloudfront_distribution resources from Serverless cloudFront configuration including origin settings, cache behaviors, SSL certificate integration, and custom error responses `M`
+12. [x] CloudFront Distribution Support - Generate aws_cloudfront_distribution resources from Serverless cloudFront configuration including origin settings, cache behaviors, SSL certificate integration, and custom error responses `M` ✅ COMPLETED (CloudFormation-style resources from resources: section + cloudFront Lambda@Edge event type with viewer/origin request/response triggers, path patterns, S3/custom origins, and Lambda@Edge constraints validation)
 
 13. [x] Route 53 & Custom Domain Management - Provision aws_route53_zone and aws_route53_record resources from Serverless customDomain configuration, with automatic API Gateway domain name and base path mapping creation `S` ✅ COMPLETED
 
 14. [x] Schema Synchronization Tooling - Develop automated tooling to generate Terraform validation code from the Serverless Framework JSON schema, ensuring validation rules stay synchronized with schema evolution across Framework versions 2.x, 3.x, and 4.x `M` ✅ COMPLETED
+
+15. [x] AWS SAM Support - Parse AWS SAM template.yaml files (Transform: AWS::Serverless-2016-10-31), translate AWS::Serverless::Function to aws_lambda_function, AWS::Serverless::SimpleTable to aws_dynamodb_table, apply Globals section defaults, resolve template Parameters, and map SAM event types (Api, HttpApi, S3, DynamoDB, SQS, Schedule, EventBridgeRule) to the existing SLS event pipeline `L` ✅ COMPLETED
 
 > Notes
 > - Each item represents a complete, testable feature with both parsing logic and AWS resource generation
