@@ -83,6 +83,16 @@ Spot-checked that the rendered HealthReconciler policy contains the expected
 `rds:*` statement — i.e. statement content and `!If` resolution are preserved;
 only the gating/coercion changed.
 
+## Follow-up: action-format validator rejects hyphenated services (v0.3.10)
+
+Once the policies above actually parse, the IAM action-format validator
+(`provider_iam_validation_errors` / `iam_validation_errors` in `locals.tf`)
+rejected valid actions whose **service segment contains a hyphen** — e.g.
+`rds-data:ExecuteStatement`, `execute-api:Invoke`, `cognito-idp:*`. The regex
+was `^[a-z0-9]+:[*a-zA-Z0-9]+$`; widened the service class to `[a-z0-9-]+`.
+This only surfaced on `develop` (its `CreatePgDatabaseFunction`, which uses the
+RDS Data API, is gated off on `test`).
+
 ## Suggested regression test
 
 Add a fixture function whose `Policies` mixes a policy template with an inline
